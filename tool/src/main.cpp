@@ -9,7 +9,7 @@ int main( int argc, char* argv[] )
     QGuiApplication app(argc, argv);
 
     ApplicationEngine engine;
-    engine.initializeEngine();
+    engine.initialize();
 
     return QGuiApplication::exec();
 }
