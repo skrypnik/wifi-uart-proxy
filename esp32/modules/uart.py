@@ -2,23 +2,30 @@ from machine import UART
 
 import _thread, time
 
+LOGGER_CATEGORY = 'UART'
+log = logger.logger( LOGGER_CATEGORY )
+
+#################################################################
+# UART handler class
+
 class handler:
     
     def __init__( self, configuration ):
         
-        self.MAX_PACKET_SIZE = 1400
-        
         self.configuration = configuration
+        
+        self.MAX_PACKET_SIZE = configuration['common']['max_packet_size']
         
         self.PORT_NUMBER = configuration['uart']['port_number']
         self.BAUD_RATE   = configuration['uart']['baud_rate']
         self.TX_GPIO     = configuration['uart']['tx_gpio']
-        self.RX_GPIO     = configuration['uart']['tx_gpio']
+        self.RX_GPIO     = configuration['uart']['rx_gpio']
         self.PARITY      = configuration['uart']['parity']
         self.INVERT      = configuration['uart']['invert']
         self.BITS        = configuration['uart']['bits']
         self.STOP        = configuration['uart']['stop']
         
+        log.write('Initializing UART')
         self.uart = UART( self.PORT_NUMBER, baudrate=self.BAUD_RATE, tx=self.TX_GPIO, rx=self.RX_GPIO )
         self.uart.init( bits=self.BITS, stop=self.STOP, parity=self.PARITY, invert=self.INVERT )
         
@@ -32,7 +39,7 @@ class handler:
         
         self.uart.read( self.MAX_PACKET_SIZE )
         
-    def queue_handler( self ):
+    def handling_loop( self ):
         
         # \todo put it to thread
         
@@ -40,5 +47,5 @@ class handler:
             
             # \todo handle packet queue here
             
-            pass
+            time.sleep_ms( self.HANDLING_INTERVAL )
         

@@ -13,8 +13,7 @@ class initializator:
         self.config = config
         
         self.LOGGER_CATEGORY = 'WLAN'
-        
-        self.logger = logger.logger( self.LOGGER_CATEGORY )
+        self.log = logger.logger( self.LOGGER_CATEGORY )
         
         self.point = wlan.point( self.config )
         
@@ -23,20 +22,25 @@ class initializator:
     
     def start( self ):
 
-        self.logger.write( 'Configuring access point' )
-
+        self.log.write( 'Configuring access point' )
         self.point.tuneAccessPoint()
 
-        self.logger.write( 'Waiting for station' )
-
+        self.log.write( 'Waiting for station' )
         self.point.waitForStation()
 
-        self.logger.write( 'Station connected' )
+        self.log.write( 'Station connected' )
 
 #################################################################
 # Converter initialization
 
+LOGGER_CATEGORY = 'BOOT'
+log = logger.logger( LOGGER_CATEGORY )
+
+log.write('Reading configuration')
 configuration = config.readConfig()
 
+log.write('Initializing WLAN')
 init = initializator( configuration )
+
+log.write('Starting WLAN')
 init.start()
