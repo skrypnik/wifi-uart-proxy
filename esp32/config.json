@@ -1,0 +1,28 @@
+{
+    "common": {
+    
+        "handling_interval" : 10
+    },
+    
+    "network": {
+    
+        "ssid"     : "RADIO",
+        "password" : "12345678",
+        "channel"  : 10,
+        "address"  : "192.168.16.1",
+        "netmask"  : "255.255.255.0",
+        "netport"  : 16777
+    },
+    
+    "uart": {
+    
+        "port_number" : 0,
+        "baud_rate"   : 115200,
+        "tx_gpio"     : 1,
+        "rx_gpio"     : 3,
+        "parity"      : 3,
+        "invert"      : 0,
+        "bits"        : 8,
+        "stop"        : 1
+    }
+}
