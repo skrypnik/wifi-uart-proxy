@@ -1,3 +1,6 @@
+#################################################################
+# Logger class
+
 class logger:
     
     def __init__( self, category ):

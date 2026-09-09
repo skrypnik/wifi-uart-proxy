@@ -1,11 +1,16 @@
+from modules import logger
+
 import socket, time
+
+LOGGER_CATEGORY = 'UDP'
+log = logger.logger( LOGGER_CATEGORY )
 
 #################################################################
 # UDP server class
 
 class server:
     
-    def __init_( self, configuration ):
+    def __init__( self, configuration ):
         
         self.configuration = configuration
         
@@ -16,19 +21,25 @@ class server:
         self.listen_address = '0.0.0.0' 
         self.listen_netport = configuration['network']['netport']
         
-        self.socket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
-      
-        self.socket.bind( (host, port) )
+        log.write( 'Initializing UDP' )
+        self.udp = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )   
+        self.udp.bind( (self.listen_address, self.listen_netport) )
         
     def put( self, data, address ):
         
         # \todo lock handler thread
         
-        sock.sendto( data, address )
+        log.write( '>>> (%s) %s' % (address, data) )
+        
+        self.udp.sendto( data, address )
         
     def get( self ):
         
-        data, address = self.socket.recvfrom( self.MAX_PACKET_SIZE )
+        datagramm, address = self.udp.recvfrom( self.MAX_PACKET_SIZE )
+        
+        log.write( '<<< (%s) %s' % ( address, datagramm ) )
+        
+        return ( address, datagramm )
         
     def handling_loop( self ):
         

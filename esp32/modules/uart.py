@@ -1,5 +1,7 @@
 from machine import UART
 
+from modules import logger
+
 import _thread, time
 
 LOGGER_CATEGORY = 'UART'
@@ -33,11 +35,17 @@ class handler:
         
         # \todo lock handler thread
         
+        log.write( ' >>> %s' % data )
+        
         self.uart.write( data )
         
     def get( self ):
         
-        self.uart.read( self.MAX_PACKET_SIZE )
+        data = self.uart.read( self.MAX_PACKET_SIZE )
+        
+        if data != None: log.write( ' <<< %s' % data )
+        
+        return data
         
     def handling_loop( self ):
         

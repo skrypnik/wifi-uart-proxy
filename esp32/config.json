@@ -1,0 +1,29 @@
+{
+    "common": {
+    
+        "handling_interval" : 10,
+        "max_packet_size"   : 1400
+    },
+    
+    "network": {
+    
+        "ssid"     : "RADIO",
+        "password" : "12345678",
+        "channel"  : 10,
+        "address"  : "192.168.16.1",
+        "netmask"  : "255.255.255.0",
+        "netport"  : 16777
+    },
+    
+    "uart": {
+    
+        "port_number" : 2,
+        "baud_rate"   : 115200,
+        "rx_gpio"     : 16,
+        "tx_gpio"     : 17,
+        "parity"      : 3,
+        "invert"      : 0,
+        "bits"        : 8,
+        "stop"        : 1
+    }
+}

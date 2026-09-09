@@ -1,4 +1,4 @@
-from modules import config, logger, wlan
+from modules import config, logger, wlan, leds
 
 #################################################################
 # Converter initializer class
@@ -35,6 +35,9 @@ class initializator:
 
 LOGGER_CATEGORY = 'BOOT'
 log = logger.logger( LOGGER_CATEGORY )
+
+INDICATOR_PIN = 14
+leds.pixel.lightPixel( INDICATOR_PIN, (128, 64, 0) )
 
 log.write('Reading configuration')
 configuration = config.readConfig()
