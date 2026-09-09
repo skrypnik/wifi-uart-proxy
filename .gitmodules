@@ -1,0 +1,3 @@
+[submodule "tool/lib/res/SimDS"]
+	path = tool/lib/res/SimDS
+	url = https://github.com/skrypnik/SimDS.git
