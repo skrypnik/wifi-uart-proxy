@@ -1,0 +1,38 @@
+module AppUI
+
+singleton Pages 1.0 qml/pages/Pages.qml
+
+StartPage   1.0 qml/pages/StartPage.qml
+ReportPage  1.0 qml/pages/ReportPage.qml
+PrimaryPage 1.0 qml/pages/PrimaryPage.qml
+
+DeviceInfoView          1.0 qml/pages/views/DeviceInfoView.qml
+StatusInfoView          1.0 qml/pages/views/StatusInfoView.qml
+MetersInfoView          1.0 qml/pages/views/MetersInfoView.qml
+CheckWizardView         1.0 qml/pages/views/CheckWizardView.qml
+CheckResultsView        1.0 qml/pages/views/CheckResultsView.qml
+HiVoltageInfoView       1.0 qml/pages/views/HiVoltageInfoView.qml
+LoVoltageInfoView       1.0 qml/pages/views/LoVoltageInfoView.qml
+ObservedDeviceView      1.0 qml/pages/views/ObservedDeviceView.qml
+DeviceDefaultsView      1.0 qml/pages/views/DeviceDefaultsView.qml
+CalibratorInfoView      1.0 qml/pages/views/CalibratorInfoView.qml
+CalibratorReadingsView  1.0 qml/pages/views/CalibratorReadingsView.qml
+
+CheckResultsItem 1.0 qml/pages/items/CheckResultsItem.qml
+
+ValuesCheckInset  1.0 qml/pages/insets/ValuesCheckInset.qml
+CreateReportInset 1.0 qml/pages/insets/CreateReportInset.qml
+
+MetersInfoDialog      1.0 qml/pages/dialogs/MetersInfoDialog.qml
+NetworkInfoDialog     1.0 qml/pages/dialogs/NetworkInfoDialog.qml
+VoltageInfoDialog     1.0 qml/pages/dialogs/VoltageInfoDialog.qml
+DeviceDefaultsDialog  1.0 qml/pages/dialogs/DeviceDefaultsDialog.qml
+CalibratorInfoDialog  1.0 qml/pages/dialogs/CalibratorInfoDialog.qml
+SingleMeterInfoDialog 1.0 qml/pages/dialogs/SingleMeterInfoDialog.qml
+
+TopPanel                 1.0 qml/pages/panels/TopPanel.qml
+InfoPanel                1.0 qml/pages/panels/InfoPanel.qml
+MetersPanel              1.0 qml/pages/panels/MetersPanel.qml
+PowerAndGenerationPanel  1.0 qml/pages/panels/PowerAndGenerationPanel.qml
+
+CheckWizard 1.0 qml/pages/wizards/CheckWizard.qml

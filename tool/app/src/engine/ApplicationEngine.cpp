@@ -10,12 +10,9 @@ ApplicationEngine::ApplicationEngine(QObject* parent)
 
 void ApplicationEngine::initialize()
 {
-    /// Load UI resources
     this->rootContext()->setContextProperty("engine", this);
 
-    /// Add resource import path
     this->addImportPath("qrc:/");
 
-    /// Load UI resources
-    this->load("qrc:/qml/main.qml");
+    this->load("qrc:/AppUI/qml/main.qml");
 }

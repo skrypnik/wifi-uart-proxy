@@ -1,5 +1,9 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/AppUI">
+
+        <file>qmldir</file>
+
         <file>qml/main.qml</file>
+
     </qresource>
 </RCC>
