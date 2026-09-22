@@ -1,6 +1,6 @@
-#include <QGuiApplication>
-
 #include <engine/ApplicationEngine.h>
+
+#include <QGuiApplication>
 
 int main( int argc, char* argv[] )
 {
@@ -8,7 +8,7 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app(argc, argv);
 
-    ApplicationEngine engine;
+    Converter::ApplicationEngine engine;
     engine.initialize();
 
     return QGuiApplication::exec();

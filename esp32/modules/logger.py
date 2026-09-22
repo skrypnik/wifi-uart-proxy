@@ -10,4 +10,3 @@ class logger:
     def write( self, message ):
         
         print( '[%s] %s' % ( self.category, message ) )
-        

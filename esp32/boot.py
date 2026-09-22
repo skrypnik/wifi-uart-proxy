@@ -1,4 +1,4 @@
-from modules import config, logger, wlan, leds
+from modules import config, logger, wifi, leds
 
 #################################################################
 # Converter initializer class
@@ -12,10 +12,10 @@ class initializator:
         
         self.config = config
         
-        self.LOGGER_CATEGORY = 'WLAN'
+        self.LOGGER_CATEGORY = 'WIFI'
         self.log = logger.logger( self.LOGGER_CATEGORY )
         
-        self.point = wlan.point( self.config )
+        self.point = wifi.point( self.config )
         
     #############################################################
     # Starts WLAN access point and waits for station connected
@@ -36,14 +36,11 @@ class initializator:
 LOGGER_CATEGORY = 'BOOT'
 log = logger.logger( LOGGER_CATEGORY )
 
-INDICATOR_PIN = 14
-leds.pixel.lightPixel( INDICATOR_PIN, (128, 64, 0) )
-
 log.write('Reading configuration')
 configuration = config.readConfig()
 
-log.write('Initializing WLAN')
+log.write('Initializing')
 init = initializator( configuration )
 
-log.write('Starting WLAN')
+log.write('Starting')
 init.start()

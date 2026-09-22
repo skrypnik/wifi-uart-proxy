@@ -2,12 +2,17 @@ from machine import Pin, Timer
 
 class button:
     
-    @staticmethod
-    def clicked( pin_number ):
+    def __init__( self, pin_number ):
         
-        pin = Pin( pin_number, Pin.IN, Pin.PULL_UP )
+        self.pin = Pin( pin_number, Pin.IN, Pin.PULL_UP )
         
-        if pin.value() == 1: return False
+        self.last = self.pin.value()
         
-        return True
+    def clicked( self ):
+        
+        idle = (self.pin.value() == 1) or (self.pin.value() == self.last)
+        
+        self.last = self.pin.value()
+         
+        return not idle
     
