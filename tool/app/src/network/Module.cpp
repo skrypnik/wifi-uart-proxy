@@ -18,8 +18,6 @@ namespace Converter::Network
         , checkTimer_(new QTimer(this))
     {
         QObject::connect(searcher_, &Searcher::incomingSenderParams, this, &Module::onDeviceConfigReceived);
-
-        QObject::connect(checkTimer_, &QTimer::timeout, this, &Module::onSendCheckPacket);
     }
 
     void Module::initialize() const
