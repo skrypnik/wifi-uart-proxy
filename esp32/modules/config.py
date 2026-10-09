@@ -1,4 +1,11 @@
+from modules import logger
+
+import uasyncio as asyncio
+
 import json
+
+LOGGER_CATEGORY = 'CONFIG'
+log = logger.logger( LOGGER_CATEGORY )
 
 class parity:
     
@@ -14,8 +21,17 @@ def readConfig():
         
         config = json.loads( data )
         
-        # We can't stores in JSON python None value, it equals to 3 in config file
-        # The remaining values corresponds to the values of the UART class
         if config['uart']['parity'] == parity.NONE: config['uart']['parity'] = None
     
         return config
+    
+def saveConfig( data ):
+    
+    log.write( 'Rewriting config file...' )
+    
+    with open( 'config.json', 'w' ) as file:
+        
+        file.write( data )
+        
+    log.write( 'Success.' )
+    

@@ -10,3 +10,7 @@ class logger:
     def write( self, message ):
         
         print( '[%s] %s' % ( self.category, message ) )
+        
+    def write_hex( self, message ):
+        
+        print( '[%s] %s' % ( self.category, bytes(message).hex() ) )

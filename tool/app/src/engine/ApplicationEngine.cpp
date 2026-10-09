@@ -16,6 +16,8 @@ namespace Converter
         , deviceInfo_(new DeviceInfo(this))
     {
         QObject::connect(networkModule_, &Network::Module::incomingDeviceConfig, deviceInfo_, &DeviceInfo::onIncomingDeviceConfig);
+
+        QObject::connect(deviceInfo_, &DeviceInfo::configCommits, networkModule_, &Network::Module::onConfigCommits);
     }
 
     void ApplicationEngine::initialize()

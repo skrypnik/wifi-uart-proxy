@@ -1,83 +1,1 @@
-from modules import controls, logger, config, leds, udp
-
-import uasyncio as asyncio
-
-import time
-
-LOGGER_CATEGORY = 'MAIN'
-log = logger.logger( LOGGER_CATEGORY )
-
-#################################################################
-# Reading converter configuration, setting global constants
-
-configuration = config.readConfig()
-
-HANDLING_INTERVAL = configuration['common']['handling_interval']
-
-MODE_COMMON_COLOR = (0, 64, 0)
-MODE_CONFIG_COLOR = (0, 0, 64)
-MODE_REBOOT_COLOR = (64, 0, 0)
-
-MODE_LED_PIN = 14
-MODE_KEY_PIN = 15
-
-#################################################################
-# Operable mode
-
-class Mode:
-    
-    COMMON_MODE = 0
-    CONFIG_MODE = 1
-    
-    def __init__( self ):
-        
-        self.value = self.COMMON_MODE
-        
-    def invert( self ):
-        
-        self.value = self.value ^ 1
-
-#################################################################
-# Main thread handler function
-
-async def main():
-    
-    # Setting up UDP server
-    server = udp.server( configuration )
-    
-    # Setting up mode settings, starts default UDP handler
-    task = asyncio.create_task( server.common_udp_handler() )
-    leds.pixel.lightPixel( MODE_LED_PIN, MODE_COMMON_COLOR )
-    mode_button = controls.button( MODE_KEY_PIN )
-    mode = Mode()
-
-    while True:
-        
-        if mode_button.clicked():
-            
-            mode.invert()
-            
-            if mode.value == Mode.COMMON_MODE:
-                
-                log.write( 'Mode changed: <COMMON> mode enabled' )
-                leds.pixel.lightPixel( MODE_LED_PIN, MODE_COMMON_COLOR )
-                
-                task.cancel()
-                await task
-                task = asyncio.create_task( server.common_udp_handler() )
-                
-            if mode.value == Mode.CONFIG_MODE:
-                
-                log.write( 'Mode changed: <CONFIG> mode enabled' )
-                leds.pixel.lightPixel( MODE_LED_PIN, MODE_CONFIG_COLOR )
-                
-                task.cancel()
-                await task
-                task = asyncio.create_task( server.config_udp_handler() )
-        
-        await asyncio.sleep_ms( 500 )
-
-#################################################################
-# Runing main thread
-
-asyncio.run( main() )
+from modules import controls, logger, packet, config, leds, udpfrom machine import UARTimport uasyncio as asyncioimport timeLOGGER_CATEGORY = 'MAIN'main_log = logger.logger( LOGGER_CATEGORY )LOGGER_CATEGORY = 'COMR'comr_log = logger.logger( LOGGER_CATEGORY )LOGGER_CATEGORY = 'COMT'comt_log = logger.logger( LOGGER_CATEGORY )LOGGER_CATEGORY = 'UDPR'udpr_log = logger.logger( LOGGER_CATEGORY )LOGGER_CATEGORY = 'UDPT'udpt_log = logger.logger( LOGGER_CATEGORY )################################################################## Reading converter configuration, setting global constantsconfiguration = config.readConfig()HANDLING_INTERVAL = configuration['common']['handling_interval']UART_PORT_NUMBER = configuration['uart']['port_number']UART_BAUD_RATE   = configuration['uart']['baud_rate']UART_RX_PIN      = configuration['uart']['rx_gpio']UART_TX_PIN      = configuration['uart']['tx_gpio']UART_BITS        = configuration['uart']['bits']UART_STOP        = configuration['uart']['stop']MODE_COMMON_COLOR = ( 0, 64, 0 )MODE_CONFIG_COLOR = ( 0, 0, 64 )MODE_LED_PIN = 14MODE_KEY_PIN = 15################################################################## Operable modeclass Mode:        COMMON_MODE = 0    CONFIG_MODE = 1        def __init__( self ):                self.value = self.COMMON_MODE            def invert( self ):                self.value = self.value ^ 1################################################################## Main thread handler functionasync def main():        # UART data packer    packer = packet.packer( configuration )        # Setting up UDP server    server = udp.server( configuration )        # Setting up UART interface    uart = UART( UART_PORT_NUMBER, baudrate=UART_BAUD_RATE, tx=UART_TX_PIN, rx=UART_RX_PIN )        # Setting up mode settings, starts default UDP handler    task = asyncio.create_task( server.common_udp_handler() )    leds.pixel.lightPixel( MODE_LED_PIN, MODE_COMMON_COLOR )    mode_button = controls.button( MODE_KEY_PIN )    mode = Mode()    while True:                udp_data = server.get()                if udp_data != None:                        # udpr_log.write_hex( udp_data )                        uart.write( udp_data )                        # comt_log.write_hex( udp_data )                if uart.any():                uart_data = uart.read()                        # comr_log.write_hex( uart_data )                        packer.put( uart_data )                        while packer.ready():                                data = packer.get()                                # udpt_log.write_hex( data )                                server.put( data )                if mode_button.clicked():                        mode.invert()                        if mode.value == Mode.COMMON_MODE:                                main_log.write( 'Mode changed: <COMMON> mode enabled' )                leds.pixel.lightPixel( MODE_LED_PIN, MODE_COMMON_COLOR )                                task.cancel()                await task                task = asyncio.create_task( server.common_udp_handler() )                            if mode.value == Mode.CONFIG_MODE:                                main_log.write( 'Mode changed: <CONFIG> mode enabled' )                leds.pixel.lightPixel( MODE_LED_PIN, MODE_CONFIG_COLOR )                                task.cancel()                await task                task = asyncio.create_task( server.config_udp_handler() )                await asyncio.sleep_ms( HANDLING_INTERVAL )################################################################## Runing main threadasyncio.run( main() )

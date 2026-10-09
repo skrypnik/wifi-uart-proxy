@@ -1,5 +1,9 @@
 from modules import config, logger, wifi, leds
 
+MODE_LED_PIN = 14
+
+MODE_REBOOT_COLOR = ( 64, 0, 0 )
+
 #################################################################
 # Converter initializer class
 
@@ -35,6 +39,8 @@ class initializator:
 
 LOGGER_CATEGORY = 'BOOT'
 log = logger.logger( LOGGER_CATEGORY )
+
+leds.pixel.lightPixel( MODE_LED_PIN, MODE_REBOOT_COLOR )
 
 log.write('Reading configuration')
 configuration = config.readConfig()

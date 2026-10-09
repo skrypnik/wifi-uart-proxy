@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QJsonObject>
 #include <QObject>
 
 class QUdpSocket;
+class QTimer;
 
 namespace Converter::Network
 {
@@ -37,12 +39,23 @@ namespace Converter::Network
          */
         void incomingDeviceConfig(const QJsonObject& config);
 
+    public slots:
+        /**
+         * Calls, when changed config is send to device
+         */
+        void onConfigCommits(const QJsonObject& config) const;
+
     private slots:
         /**
          * Incoming device config handler
          * @param config packet with device config in JSON format
          */
         void onDeviceConfigReceived(const QJsonObject& config);
+
+        /**
+         * Packet sending check function
+         */
+        void onSendCheckPacket();
 
     private:
         /**
@@ -54,6 +67,16 @@ namespace Converter::Network
         * Network device searcher
         */
         Searcher* searcher_;
+
+        /**
+         * Packet sending check timer
+         */
+        QTimer* checkTimer_;
+
+        /**
+         * Stores last received device config
+         */
+        QJsonObject config_;
     };
 
 }

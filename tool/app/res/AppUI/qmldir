@@ -1,1 +1,5 @@
 module AppUI
+
+WLANInfoView 1.0 qml/views/WLANInfoView.qml
+ELANInfoView 1.0 qml/views/ELANInfoView.qml
+UARTInfoView 1.0 qml/views/UARTInfoView.qml

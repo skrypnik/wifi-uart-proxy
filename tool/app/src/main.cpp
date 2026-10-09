@@ -8,6 +8,9 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app(argc, argv);
 
+    Q_INIT_RESOURCE( AppUI );
+    Q_INIT_RESOURCE( SimDS );
+
     Converter::ApplicationEngine engine;
     engine.initialize();
 

@@ -54,12 +54,47 @@ namespace Converter
          */
         Q_PROPERTY( QVariant stop READ stop NOTIFY configChanged )
 
+        /**
+         * Device ready flag metaobject property
+         */
+        Q_PROPERTY( QVariant ready READ ready NOTIFY configChanged )
+
     public:
         /**
          * Constructs object
          * @param parent parent object to safe deletion
          */
         explicit DeviceInfo(QObject* parent = nullptr);
+
+    public:
+        /**
+         * Changes WLAN config params
+         * @param ssid Wi-Fi access point SSID
+         * @param password Wi-Fi access point password
+         * @param channel Wi-Fi access point channel
+         */
+        Q_INVOKABLE void changeWLANConfig(const QString& ssid, const QString& password, const QString& channel);
+
+        /**
+         * Changes ELAN config params
+         * @param address Network address
+         * @param netmask Network mask
+         * @param port Network port
+         */
+        Q_INVOKABLE void changeELANConfig(const QString& address, const QString& netmask, const QString& port);
+
+        /**
+         * Changes UART config params
+         * @param speed UART speed (baud rate)
+         * @param bits UART bits count
+         * @param stop UART stop bits count
+         */
+        Q_INVOKABLE void changeUARTConfig(const QString& speed, const QString& bits, const QString& stop);
+
+        /**
+         * Sends changed config to device
+         */
+        Q_INVOKABLE void commitChanges();
 
     private:
         /**
@@ -107,11 +142,21 @@ namespace Converter
          */
         [[nodiscard]] QVariant stop() const;
 
+        /**
+         * Device ready flag
+         */
+        [[nodiscard]] QVariant ready() const;
+
     signals:
         /**
          * Emits, when config is changed
          */
         void configChanged();
+
+        /**
+         * Emits, when changed config is send to device
+         */
+        void configCommits(const QJsonObject& config);
 
     public slots:
         /**
@@ -125,6 +170,11 @@ namespace Converter
          * Device config in JSON format
          */
         QJsonObject config_;
+
+        /**
+         * Ready flag
+         */
+        bool ready_;
     };
 
 }

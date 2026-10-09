@@ -5,5 +5,9 @@
 
         <file>qml/main.qml</file>
 
+        <file>qml/views/WLANInfoView.qml</file>
+        <file>qml/views/ELANInfoView.qml</file>
+        <file>qml/views/UARTInfoView.qml</file>
+
     </qresource>
 </RCC>
