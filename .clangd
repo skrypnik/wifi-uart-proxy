@@ -1,0 +1,4 @@
+CompileFlags:
+  CompilationDatabase: /home/skrypnik/workspace/projects/mars-energo/wifi-uart-proxy/build
+  Remove: [-m*, -f*]
+  BuiltinHeaders: QueryDriver

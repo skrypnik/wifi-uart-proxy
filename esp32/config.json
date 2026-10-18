@@ -1,1 +1,0 @@
-{"common": {"handling_interval": 10, "max_packet_size": 1409, "udp_header_size": 9}, "uart": {"port_number": 2, "rx_gpio": 16, "baud_rate": 115200, "parity": null, "bits": 8, "stop": 1, "tx_gpio": 17, "invert": 0}, "network": {"netmask": "255.255.255.0", "channel": 10, "ssid": "RADIO", "address": "192.168.16.1", "password": "12345678", "netport": 16777}}
