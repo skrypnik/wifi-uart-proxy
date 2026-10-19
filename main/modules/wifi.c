@@ -1,13 +1,11 @@
 #include "wifi.h"
+#include "defs.h"
 
-#include "nvs_flash.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
+#include <nvs_flash.h>
+#include <esp_wifi.h>
+#include <esp_log.h>
 
 #include <esp_sleep.h>
-
-#define SLEEP_INTERVAL_USEC     100000
-#define INIT_WAIT_INTERVAL_USEC 5000000
 
 static const char* TAG = "WIFI";
 
@@ -91,7 +89,7 @@ int wifi_init_status(void)
 {
 	esp_sleep_enable_timer_wakeup(SLEEP_INTERVAL_USEC);
 	
-	int iterations = INIT_WAIT_INTERVAL_USEC / SLEEP_INTERVAL_USEC;
+	int iterations = CHECK_INTERVAL_USEC / SLEEP_INTERVAL_USEC;
 	
 	for(int idx=0x00; idx<iterations; ++idx) {
 		

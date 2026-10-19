@@ -5,11 +5,6 @@
 
 #include "esp_netif.h"
 
-#define ESP_WIFI_SSID   	"RADIO"
-#define ESP_WIFI_PASSWORD	"12345678"
-#define MAX_WIFI_STATIONS	2
-#define ESP_WIFI_CHANNEL	1
-
 enum wifi_status_t {
 	
 	WIFI_NOT_CONFIGURED       = 0x00,

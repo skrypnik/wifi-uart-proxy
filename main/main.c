@@ -11,9 +11,7 @@
 static const char* TAG = "MAIN";
 
 void app_main(void)
-{
-	esp_sleep_enable_timer_wakeup(SLEEP_INTERVAL_USEC);
-	
+{	
 	wifi_init_access_point();
 	
 	if(wifi_init_status() == WIFI_NOT_CONFIGURED) {
