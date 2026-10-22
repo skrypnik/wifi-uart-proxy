@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #define SLEEP_INTERVAL_USEC	100000
 #define CHECK_INTERVAL_USEC 15000000
 
@@ -7,7 +9,11 @@
 #define ESP_WIFI_CHANNEL	1
 
 #define UART_BUFFER_SIZE	1400
+#define UART_HEADER_SIZE	4
+#define UART_CHECKSUM_SIZE	2
 
 #define UDP_SERVER_PORT	16777
 #define UDP_BUFFER_SIZE	1409
 #define UDP_HEADER_SIZE	9
+
+void print_hex(uint8_t* buffer, int size);

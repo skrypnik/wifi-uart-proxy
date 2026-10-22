@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 
 #include "esp_netif.h"
+#include <stdint.h>
 
 enum wifi_status_t {
 	

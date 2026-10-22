@@ -1,7 +1,7 @@
-file( GLOB_RECURSE PROJECT_HEADERS main/*.h)
-file( GLOB_RECURSE PROJECT_SOURCES main/*.cpp)
+file( GLOB_RECURSE PROJECT_HEADERS *.h)
+file( GLOB_RECURSE PROJECT_SOURCES *.c)
 
 idf_component_register(
 
-    SRCS main.c modules/wifi.c modules/wifi.h modules/udps.c modules/udps.h modules/uart.c modules/uart.h
+	SRCS ${PROJECT_HEADERS} ${PROJECT_SOURCES}
 )

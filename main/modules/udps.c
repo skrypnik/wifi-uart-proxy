@@ -2,30 +2,23 @@
 #include "uart.h"
 #include "defs.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
-#include <lwip/sockets.h>
-#include <lwip/sys.h>
-#include <lwip/netdb.h>
+#include <stdio.h>
 
 #include <esp_log.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include <lwip/netdb.h>
+#include <lwip/sys.h>
+
+#include <driver/uart.h>
+#include <driver/gpio.h>
+#include <string.h>
+
 static const char *TAG = "UDPS";
 
-static char address[32];
-
-static char udp_buffer[UDP_BUFFER_SIZE];
-
-void print_hex(char* buffer, int size) {
-	
-	for(int idx=0x00; idx<size; ++idx) {
-		
-		printf("%02X ", buffer[idx]);
-	}
-	
-	printf("\n");
-}
+uint8_t udp_buffer[UDP_BUFFER_SIZE];
 
 void udp_server_task(void* parameters) {
 	
@@ -60,19 +53,21 @@ void udp_server_task(void* parameters) {
 
     while (true) {
 		
-		int size = recvfrom(udp_socket, udp_buffer, UDP_BUFFER_SIZE, 0, (struct sockaddr*)&source_address, (socklen_t *)&address_family);
+		printf("Wait for packet...\n");
+		
+		socklen_t addrlen = sizeof(source_address);
+		
+		int size = recvfrom(udp_socket, udp_buffer, UDP_BUFFER_SIZE, 0, (struct sockaddr*)&source_address, &addrlen);
 
 		if (size == -1) {
 			
-            ESP_LOGE(TAG, "Receive failed");
+            ESP_LOGE(TAG, "Receive failed...");
             continue;
         }
-
-        inet_ntop(address_family, &source_address.sin_addr, address, sizeof(address));
-        ESP_LOGI( TAG, "Received packet from %s: ", address );
-		print_hex(udp_buffer, size);
 		
 		uart_send(udp_buffer + UDP_HEADER_SIZE, size - UDP_HEADER_SIZE);
+		
+		//////////////////////////////////////////////////////////////////////////////
 
         uart_process_response(udp_socket, &source_address);
     }
