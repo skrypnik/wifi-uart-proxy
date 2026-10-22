@@ -159,7 +159,7 @@ void uart_process_response(int socket, struct sockaddr_in* source_address) {
 		printf("Frame size: %d\n", size);
 		
 		memset(frame, 0x00, 0x01);
-		memcpy(frame + 0x01, &size, sizeof(size));
+		memcpy(frame + 0x01, &expect, sizeof(expect));
 		memcpy(frame + 0x05, &offset, sizeof(offset));
 		memcpy(frame + 0x09, buffer + offset, size);
 		
