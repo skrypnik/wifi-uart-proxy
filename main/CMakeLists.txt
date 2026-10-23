@@ -5,3 +5,5 @@ idf_component_register(
 
 	SRCS ${PROJECT_HEADERS} ${PROJECT_SOURCES}
 )
+
+spiffs_create_partition_image( storage ../image FLASH_IN_PROJECT )

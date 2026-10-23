@@ -1,4 +1,5 @@
 #include "udps.h"
+#include "conf.h"
 #include "uart.h"
 #include "defs.h"
 
@@ -47,7 +48,7 @@ void udp_server_task(void* parameters) {
         return;
     }
 	
-	ESP_LOGE( TAG, "Socket created at %d", UDP_SERVER_PORT );
+	printf("Socket created at %d\n", UDP_SERVER_PORT);
 	
 	uart_init();
 
@@ -65,10 +66,22 @@ void udp_server_task(void* parameters) {
             continue;
         }
 		
-		uart_send(udp_buffer + UDP_HEADER_SIZE, size - UDP_HEADER_SIZE);
+		//////////////////////////////////////////////////////////////////////////////
+		
+		int32_t header; memcpy(&header, udp_buffer, sizeof(header));
+		
+		//////////////////////////////////////////////////////////////////////////////
+		
+		if(header) {
+			
+			process_config_request(udp_socket, &source_address, udp_buffer + sizeof(header), size - sizeof(header));
+			
+			continue;
+		}
 		
 		//////////////////////////////////////////////////////////////////////////////
 
+		uart_send(udp_buffer + UDP_HEADER_SIZE, size - UDP_HEADER_SIZE);
         uart_process_response(udp_socket, &source_address);
     }
 
