@@ -1,8 +1,9 @@
 #include "udps.h"
-#include "conf.h"
 #include "uart.h"
 #include "defs.h"
+#include "conf.h"
 
+#include <stdint.h>
 #include <stdio.h>
 
 #include <esp_log.h>
@@ -15,7 +16,6 @@
 
 #include <driver/uart.h>
 #include <driver/gpio.h>
-#include <string.h>
 
 static const char *TAG = "UDPS";
 
@@ -37,13 +37,13 @@ void udp_server_task(void* parameters) {
 	
     if (udp_socket == -1) {
 		
-        ESP_LOGE( TAG, "Failed to create socket" );
+        ESP_LOGE( TAG, "Failed to create socket\n" );
         return;
     }
 
     if (bind(udp_socket, (struct sockaddr*)&listen_address, sizeof(listen_address)) == -1) {
 		
-        ESP_LOGE (TAG, "Failed to bind address" );
+        ESP_LOGE (TAG, "Failed to bind address\n" );
         close(udp_socket);
         return;
     }
@@ -62,22 +62,25 @@ void udp_server_task(void* parameters) {
 
 		if (size == -1) {
 			
-            ESP_LOGE(TAG, "Receive failed...");
+            ESP_LOGE(TAG, "Receive failed...\n");
             continue;
         }
 		
 		//////////////////////////////////////////////////////////////////////////////
 		
-		int32_t header; memcpy(&header, udp_buffer, sizeof(header));
+//		int32_t header; memcpy(&header, udp_buffer, sizeof(header));
+//		print_hex((uint8_t*) &header, sizeof(header));
 		
 		//////////////////////////////////////////////////////////////////////////////
 		
-		if(header) {
-			
-			process_config_request(udp_socket, &source_address, udp_buffer + sizeof(header), size - sizeof(header));
-			
-			continue;
-		}
+//		if(header && check_config_packet((uint8_t*) &header)) {
+//			
+//			printf("Process configuration request");
+//			
+//			process_config_request(udp_socket, &source_address, udp_buffer + sizeof(header), size - sizeof(header));
+//			
+//			continue;
+//		}
 		
 		//////////////////////////////////////////////////////////////////////////////
 

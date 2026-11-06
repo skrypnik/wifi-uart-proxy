@@ -14,11 +14,13 @@ void app_main(void)
 {
 	//////////////////////////////////////////////////////////////////////////////
 	
-	init_spi_filesystem();
-	
-	load_network_info();
-	
-	deinit_spi_filesystem();
+//	init_spi_filesystem();
+//	
+//	load_network_info();
+//	load_firmware_info();
+//	load_protocol_info();
+//	
+//	deinit_spi_filesystem();
 	
 	//////////////////////////////////////////////////////////////////////////////
 				
@@ -26,12 +28,13 @@ void app_main(void)
 	
 	if(wifi_init_status() == WIFI_NOT_CONFIGURED) {
 		
-		ESP_LOGI( TAG, "Can't configure WiFi access point. Exiting...");
+		ESP_LOGI( TAG, "Can't configure WiFi access point. Exiting...\n");
 				
 		return;
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////
-	
+	printf("Creating network handler...\n");
 	xTaskCreate(udp_server_task, "udp_server_task", 4096, NULL, 1, NULL);
+	printf("Network handler created...\n");
 }

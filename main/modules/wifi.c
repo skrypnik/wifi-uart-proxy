@@ -1,7 +1,8 @@
 #include "wifi.h"
 #include "defs.h"
-#include "esp_netif.h"
+#include "conf.h"
 
+#include <esp_netif.h>
 #include <esp_sleep.h>
 #include <nvs_flash.h>
 #include <esp_wifi.h>
@@ -78,18 +79,23 @@ void wifi_init_access_point(void)
 
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_AP, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
-
+	
 	esp_netif_ip_info_t ip_info;
-//	ip_info.ip.addr = ESP_IP4TOADDR(192, 168, 4, 1);
-//	ip_info.gw.addr = ESP_IP4TOADDR(192, 168, 4, 1);
-//	ip_info.netmask.addr = ESP_IP4TOADDR(255, 255, 255, 0);
-//	
+	
+//  \TODO
+//	const network_info_t* network_info = get_network_info();
+//	ip_info.ip.addr = network_info->address;
+//	ip_info.gw.addr = network_info->address;
+//	ip_info.netmask.addr = network_info->netmask;
+	
 //	ESP_ERROR_CHECK( esp_netif_dhcps_stop(p_netif) );
 //	ESP_ERROR_CHECK( esp_netif_set_ip_info(p_netif, &ip_info) );
 //	ESP_ERROR_CHECK( esp_netif_dhcps_start(p_netif) );
+//  \TODO
 
 	ESP_ERROR_CHECK( esp_netif_get_ip_info(p_netif, &ip_info) );
-    ESP_LOGI( TAG, "ESP32 AP IP: "IPSTR, IP2STR(&ip_info.ip) );
+    ESP_LOGI( TAG, "ESP32 AP ADDRESS: "IPSTR, IP2STR(&ip_info.ip) );
+	ESP_LOGI( TAG, "ESP32 AP NETMASK: "IPSTR, IP2STR(&ip_info.netmask) );
 }
 
 int wifi_init_status(void)

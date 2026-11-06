@@ -1,20 +1,27 @@
 #include "uart.h"
 #include "defs.h"
-#include "lwip/sockets.h"
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <esp_timer.h>
+
+#include <sys/types.h>
+
 #include <driver/uart.h>
 #include <driver/gpio.h>
 
-uint8_t uart_buffer[UART_BUFFER_SIZE];
+#include <lwip/sockets.h>
 
-static const uint8_t UART_CHECKSUM_ERROR [] = { 0x02, 0xFF, 0x01, 0x00, 0x02, 0x18, 0x52 };
-static const uint8_t UART_SYNCBYTE_ERROR [] = { 0x02, 0xFF, 0x00, 0x00, 0x22, 0x0B };
+#define PROCESS_TIMEOUT 10000000
 
-static const uint16_t polynom[256] =
+static const uint8_t UART_CHECKS_ERROR [] = { 0x02, 0xFF, 0x01, 0x00, 0x02, 0x18, 0x52 };
+static const uint8_t UART_COMMON_ERROR [] = { 0x02, 0xFF, 0x00, 0x00, 0x22, 0x0B };
+
+static uint8_t uart_buffer[UART_BUFFER_SIZE];
+
+static const uint16_t polynomial[256] =
 {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7, 0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
 	0x1231, 0x0210, 0x3273, 0x2252, 0x52B5, 0x4294, 0x72F7, 0x62D6, 0x9339, 0x8318, 0xB37B, 0xA35A, 0xD3BD, 0xC39C, 0xF3FF, 0xE3DE,
@@ -34,6 +41,8 @@ static const uint16_t polynom[256] =
 	0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8, 0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
+static bool timeout = false;
+
 uint16_t CRC16(const void* buffer, int size)
 {
  	uint8_t* ptr = (uint8_t*) buffer ;
@@ -44,13 +53,13 @@ uint16_t CRC16(const void* buffer, int size)
  	{
  		uint8_t data = *ptr++;
   		data ^= (uint8_t) (crc >> 0x08);
-  		uint16_t temp = polynom[data];
+  		uint16_t temp = polynomial[data];
   		crc = temp ^ (crc << 0x08);
  	}
 	
-	uint8_t rbyte = crc >> 0x08;
+	uint8_t byte = crc >> 0x08;
 	
-	return (crc << 0x08) | rbyte;
+	return (crc << 0x08) | byte;
 }	
 
 void uart_init() {
@@ -74,21 +83,57 @@ void uart_send(uint8_t* data, int size) {
 	uart_write_bytes(UART_NUM_2, data, size);
 }
 
+//static void uart_check_process_timeout(void* arg) {	
+//	
+//	printf("Process canceled by timeout...\n");
+//	
+//	timeout = true;
+//}
+
 void uart_process_response(int socket, struct sockaddr_in* source_address) {
 	
-	size_t data_size = 0x00;
+	printf("Process device request\n");
 	
+//	const esp_timer_create_args_t check_timer_args = {
+//	        .callback = &uart_check_process_timeout,
+//			.name = "check-timer",
+//	        .arg = NULL
+//	};
+//	
+//	esp_timer_handle_t check_timer;
+//	ESP_ERROR_CHECK(esp_timer_create(&check_timer_args, &check_timer));
+//	ESP_ERROR_CHECK(esp_timer_start_once(check_timer, PROCESS_TIMEOUT));
+	
+	timeout = false;
+	
+	size_t data_size = 0x00;
+
 	uart_get_buffered_data_len(UART_NUM_2, &data_size);
 	
-	while (!data_size) { /// \TODO break by wait interval
-	
+	while (!data_size) {
+		
+//		if(timeout) {
+//			
+//			printf("ERROR: PROCESS TIMEOUT.\n");
+//			
+//			static uint_fast8_t error[0x0F];
+//			memset(error, 0x00, 0x0F);
+//			memcpy(error + UDP_HEADER_SIZE, UART_COMMON_ERROR, 0x06);
+//
+//			socklen_t addrlen = sizeof(*source_address);			
+//			sendto(socket, error, 0x0F, 0, (struct sockaddr *)source_address, addrlen);
+//
+//			return;
+//		}
+
 		uart_get_buffered_data_len(UART_NUM_2, &data_size);
 	}
 	
 	int actual = uart_read_bytes(UART_NUM_2, uart_buffer, UART_BUFFER_SIZE, 0);
 	
-	uint16_t sync = 0x00;
-	memcpy( &sync, uart_buffer, sizeof(sync));
+	uint8_t sync = uart_buffer[0x00];
+	
+	printf("SYNC BYTE: %d\n", sync);
 	
 	if(sync != 0x02) {
 		
@@ -96,7 +141,7 @@ void uart_process_response(int socket, struct sockaddr_in* source_address) {
 		
 		static uint_fast8_t error[0x0F];
 		memset(error, 0x00, 0x0F);
-		memcpy(error + UDP_HEADER_SIZE, UART_SYNCBYTE_ERROR, 0x06);
+		memcpy(error + UDP_HEADER_SIZE, UART_COMMON_ERROR, 0x06);
 		
 		socklen_t addrlen = sizeof(*source_address);			
 		sendto(socket, error, 0x0F, 0, (struct sockaddr *)source_address, addrlen);
@@ -111,10 +156,26 @@ void uart_process_response(int socket, struct sockaddr_in* source_address) {
 	printf("Buffer size: %d\n", expect);
 	uint8_t* buffer = (uint8_t*) heap_caps_malloc(expect, MALLOC_CAP_8BIT);
 	memcpy(buffer, uart_buffer, actual);
-	
+
 	int offset = actual; 
 	
-	while (actual < expect) { /// \TODO break by wait interval
+	while (actual < expect) {
+		
+//		if(timeout) {
+//			
+//			printf("ERROR: PROCESS TIMEOUT.\n");
+//			
+//			static uint_fast8_t error[0x0F];
+//			memset(error, 0x00, 0x0F);
+//			memcpy(error + UDP_HEADER_SIZE, UART_COMMON_ERROR, 0x06);
+//
+//			socklen_t addrlen = sizeof(*source_address);			
+//			sendto(socket, error, 0x0F, 0, (struct sockaddr *)source_address, addrlen);
+//			
+//			heap_caps_free(buffer);
+//
+//			return;
+//		}
 	
 		int size = uart_read_bytes(UART_NUM_2, uart_buffer, UART_BUFFER_SIZE, 10);
 		
@@ -136,10 +197,12 @@ void uart_process_response(int socket, struct sockaddr_in* source_address) {
 
 		static uint_fast8_t error[0x10];
 		memset(error, 0x00, 0x10);
-		memcpy(error + UDP_HEADER_SIZE, UART_CHECKSUM_ERROR, 0x07);
+		memcpy(error + UDP_HEADER_SIZE, UART_CHECKS_ERROR, 0x07);
 
 		socklen_t addrlen = sizeof(*source_address);			
 		sendto(socket, error, 0x10, 0, (struct sockaddr *)source_address, addrlen);
+		
+		heap_caps_free(buffer);
 
 		return;
 	}
